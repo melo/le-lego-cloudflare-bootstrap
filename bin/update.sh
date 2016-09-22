@@ -15,6 +15,8 @@ set -e
 ## Which certificates to update?
 specs="$@"
 git_commit_globals
+
+rm -f ".dirty.at_least_one"
 if [ -z "$specs" ] ; then
   ls -d1 "$specs_dir/"* | while read spec_dir ; do
     if [ -d "$spec_dir" ] ; then
@@ -33,9 +35,12 @@ fi
 
 
 ## Run deploy hook
-if [ -x "./hooks/deploy.sh" ] ; then
-  echo "... running deploy hook"
-  ./hooks/deploy.sh
+if [ -e ".dirty.at_least_one" ] ; then
+  rm -f ".dirty.at_least_one"
+  if [ -x "./hooks/deploy.sh" ] ; then
+    echo "... running deploy hook"
+    ./hooks/deploy.sh
+  fi
 fi
 
 

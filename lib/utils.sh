@@ -66,6 +66,27 @@ git_commit ()
   if_true "GIT_COMMITS" _do_git_commit "$@"
 }
 
+_do_git_commit_and_mark_dirty () {
+  local msg flag
+  flag="$1"
+  shift
+  msg="$1"
+  shift
+
+  if [ -n "$( git status --porcelain "$@" )" ] ; then
+    echo "... git commit '$msg' of '$@'"
+    dry_run git add "$@"
+    dry_run git commit -m "$msg" -m "Generated-by: le-lego-cloudflare $0"
+    dry_run touch "$flag"
+    dry_run touch ".dirty.at_least_one"
+  fi
+}
+
+git_commit_and_mark_dirty ()
+{
+  if_true "GIT_COMMITS" _do_git_commit_and_mark_dirty "$@"
+}
+
 git_commit_globals ()
 {
   ## Commit global stuff
@@ -83,18 +104,34 @@ update_single_cert () {
   local cert_spec_dir
   cert_spec_dir="$1"
 
+  rm -f ".dirty.single" ## Sanity, just in case...
+
   cert_name=`basename "$cert_spec_dir"`
+
   mkdir -p "logs"
   logfile="logs/$cert_name.log"
+
   ./lib/update_single.sh "$cert_spec_dir" 2>&1 | tee "$logfile"
-  git_commit "Updated last run logs for certificate $cert_name" "$logfile"
+
+  if [ -e ".dirty.single" ] ; then
+    echo "... certificate updated"
+    final_logfile="$cert_spec_dir/last_update.log"
+    mv "$logfile" "$final_logfile"
+  else
+    echo "... certificate was not updated"
+    final_logfile="$cert_spec_dir/last_run.log"
+    mv "$logfile" "$final_logfile"
+  fi
+
+  git_commit "Updated logs for certificate $cert_name": "$final_logfile"
+  rm -f ".dirty.single"
 }
 
 
 #######################################################
 # Read the global configuration file and apply defaults
 
-if [ -e "global_defs.sh" ] ; then
+if [ -e "./global_defs.sh" ] ; then
   echo "... reading global_defs.sh"
   . "./global_defs.sh"
 fi
