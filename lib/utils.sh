@@ -40,7 +40,7 @@ dry_run ()
   if_true  'DRY_RUN' echo "!!! Dry run:" "$@"
 }
 
-exit_if_disabled ()
+fatal_if_disabled ()
 {
   if_true "DISABLED" fatal "$@"
 }
@@ -99,4 +99,4 @@ if [ -e "global_defs.sh" ] ; then
 fi
 . "./lib/defaults.sh"
 
-exit_if_disabled "FATAL: all certificates updates disabled on the global defs.sh"
+fatal_if_disabled "all certificates updates disabled via 'global_defs.sh'"

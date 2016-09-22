@@ -30,7 +30,7 @@ else
   fatal "invalid certificate spec dir '$cert_spec_dir': missing spec.sh file"
 fi
 
-exit_if_disabled "FATAL: certificate '$cert_name' disabled in '$cert_spec_file' spec file"
+fatal_if_disabled "certificate '$cert_name' disabled in '$cert_spec_file' spec file"
 
 if [ -z "$DOMAIN" ] ; then
   fatal "no domain to use on certificate '$cert_name' spec file" "local $cert_spec_file lacks a DOMAIN configuration"
