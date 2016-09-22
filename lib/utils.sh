@@ -82,13 +82,13 @@ git_commit_globals ()
 # Logic to update a single cert
 
 update_single_cert () {
-  local cert_file
-  cert_file="$1"
+  local cert_spec_dir
+  cert_spec_dir="$1"
 
-  cert_name=`basename "$cert_file"`
+  cert_name=`basename "$cert_spec_dir"`
   mkdir -p "logs"
   logfile="logs/$cert_name.log"
-  ./lib/update_single.sh "$cert_file" 2>&1 | tee "$logfile"
+  ./lib/update_single.sh "$cert_spec_dir" 2>&1 | tee "$logfile"
   git_commit "Updated last run logs for certificate $cert_name" "$logfile"
 }
 

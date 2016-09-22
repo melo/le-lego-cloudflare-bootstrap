@@ -9,42 +9,44 @@ set -e
 
 
 ## Inputs
-cert_file="$1"
-if [ -z "$cert_file" ] ; then
-  echo "Usage: ./bin/update_single.sh certificate_spec_file"
+cert_spec_dir="$1"
+if [ -z "$cert_spec_dir" ] ; then
+  echo "Usage: ./lib/update_single.sh certificate_spec_dir"
   exit 2
 fi
 
-cert_name=`basename "$cert_file"`
-echo "*** Updating '$cert_name' certificate"
+cert_name=`basename "$cert_spec_dir"`
+echo "*** Updating '$cert_name' certificate '$cert_spec_dir'"
 printf "*** at "
 date
 
 
 ## Check to see if we have a valid domain to update
-
-if [ -e "$cert_file" ] ; then
-  echo "... reading certificate '$cert_name' spec file"
-  . "$cert_file"
+cert_spec_file="$cert_spec_dir/spec.sh"
+if [ -e "$cert_spec_file" ] ; then
+  echo "... reading certificate '$cert_spec_file' spec file"
+  . "$cert_spec_file"
+else
+  fatal "invalid certificate spec dir '$cert_spec_dir': missing spec.sh file"
 fi
 
-exit_if_disabled "FATAL: certificate '$cert_name' disabled on the local $cert_file"
+exit_if_disabled "FATAL: certificate '$cert_name' disabled in '$cert_spec_file' spec file"
 
 if [ -z "$DOMAIN" ] ; then
-  fatal "no domain to update on certificate '$cert_name'" "local $cert_file lacks a DOMAIN configuration"
+  fatal "no domain to use on certificate '$cert_name' spec file" "local $cert_spec_file lacks a DOMAIN configuration"
 fi
 
 
 ## Check for other required settings
-for cfvar in "CLOUDFLARE_EMAIL" "CLOUDFLARE_API_KEY" "EMAIL" "KEY_TYPE"; do
-  if [ -z "${!cfvar}" ] ; then
-    fatal "missing $cfvar definition" "add it to the global or local $cert_file"
+for var in "CLOUDFLARE_EMAIL" "CLOUDFLARE_API_KEY" "EMAIL" "KEY_TYPE"; do
+  if [ -z "${!var}" ] ; then
+    fatal "missing $var definition via spec files" "add it to the global or local '$cert_name' certificate spec file"
   fi
 done
 export CLOUDFLARE_EMAIL CLOUDFLARE_API_KEY
 
 
-## Check for lego
+## Check for lego: this will die if lego not found
 printf "... using "
 lego --version
 
@@ -62,18 +64,19 @@ fi
 ## Define all the domains to generate cert for
 echo "... generating certificate for domain '$DOMAIN'"
 domains="--domains $DOMAIN"
-additional_doms_file="$cert_file-additional_domains.txt"
-if [ -e "$additional_doms_file" ] ; then
-  echo "... scanning file $additional_doms_file for additional domains for certificate"
+extra_domains_file="$cert_spec_dir/extra-domains.txt"
+if [ -e "$extra_domains_file" ] ; then
+  echo "... scanning file $extra_domains_file for extra domains"
    while read dom ; do
     echo "...... adding extra domain '$dom'"
     domains+=" --domains $dom"
-  done < <( egrep -v "^\s*#" "$additional_doms_file" | egrep -v "^\s*$" )
+  done < <( egrep -v "^\s*#" "$extra_domains_file" | egrep -v "^\s*$" )
+else
+  echo "... extra domains file '$extra_domains_file' not found, skipping"
 fi
 
 
 ## Create or renew?
-
 if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certificates/$DOMAIN.json" ] ; then
   ## Renew the certificate!
   echo "... renewing the certificate '$cert_name'"
@@ -86,9 +89,9 @@ if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certi
         --accept-tos \
         $server renew \
         --days "${RENEW_DAYS_BEFORE_EXPIRE:-30}"
-else    
+else
   ## Create the certificate!
-  echo "... creating certificate '$cert_name' for $domains"
+  echo "... creating certificate '$cert_name'"
   dry_run lego \
       --path "." \
       --email="$EMAIL" \
@@ -103,5 +106,7 @@ if [ ! -e "certificates/$DOMAIN.key" -o ! -e "certificates/$DOMAIN.crt" -o ! -e 
   dry_run fatal "failed to create certificate for '$DOMAIN'"
 fi
 
+
+## commit all the things
 git_commit_globals
 git_commit "Updated certificate $cert for domain $DOMAIN" "$cert_file" "./certificates/$DOMAIN.*"
