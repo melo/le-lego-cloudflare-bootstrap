@@ -42,7 +42,7 @@ _do_git_commit () {
   if [ -n "$( git status --porcelain "$@" )" ] ; then
     echo "... git commit '$msg' of '$@'"
     git add "$@"
-    git commit -m "$msg"
+    git commit -m "$msg" -m "Generated-by: le-lego-cloudflare $0"
   fi
 }
 
