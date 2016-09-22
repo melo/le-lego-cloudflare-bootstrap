@@ -108,23 +108,21 @@ update_single_cert () {
 
   cert_name=`basename "$cert_spec_dir"`
 
-  mkdir -p "logs"
+  mkdir -p "logs" "logs/$cert_name"
   logfile="logs/$cert_name.log"
 
   ./lib/update_single.sh "$cert_spec_dir" 2>&1 | tee "$logfile"
 
   if [ -e ".dirty.single" ] ; then
     echo "... certificate updated"
-    final_logfile="$cert_spec_dir/last_update.log"
-    mv "$logfile" "$final_logfile"
+    mv "$logfile" "logs/$cert_name/last_update.log"
   else
     echo "... certificate was not updated"
-    final_logfile="$cert_spec_dir/last_run.log"
-    mv "$logfile" "$final_logfile"
+    mv "$logfile" "logs/$cert_name/last_run.log"
   fi
-
-  git_commit "Updated logs for certificate $cert_name": "$final_logfile"
   rm -f ".dirty.single"
+
+  git_commit "Updated logs for certificate $cert_name" "logs/$cert_name"
 }
 
 
