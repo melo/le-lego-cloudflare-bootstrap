@@ -1,7 +1,6 @@
 #
-# Our shell utilities library
+# Our shell utilities library and bootstrap code
 #
-
 
 #################
 # Generic helpers
@@ -37,8 +36,6 @@ if_false ()
 
 dry_run ()
 {
-  DRY_RUN=${DRY_RUN:-no}
-
   if_false 'DRY_RUN' "$@"
   if_true  'DRY_RUN' echo "!!! Dry run:" "$@"
 }
@@ -93,12 +90,13 @@ update_single_cert () {
 }
 
 
-####################################
-# Read the global configuration file
+#######################################################
+# Read the global configuration file and apply defaults
 
 if [ -e "global_defs.sh" ] ; then
   echo "... reading global_defs.sh"
   . "./global_defs.sh"
 fi
+. "./lib/defaults.sh"
 
 exit_if_disabled "FATAL: all certificates updates disabled on the global defs.sh"

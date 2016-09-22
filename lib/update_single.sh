@@ -38,7 +38,8 @@ fi
 
 
 ## Check for other required settings
-for var in "CLOUDFLARE_EMAIL" "CLOUDFLARE_API_KEY" "EMAIL" "KEY_TYPE"; do
+
+for var in "EMAIL" "CLOUDFLARE_EMAIL" "CLOUDFLARE_API_KEY" "RENEW_DAYS_BEFORE_EXPIRE" "KEY_TYPE" "ENVIRONMENT" ; do
   if [ -z "${!var}" ] ; then
     fatal "missing $var definition via spec files" "add it to the global or local '$cert_name' certificate spec file"
   fi
@@ -55,9 +56,11 @@ lego --version
 server=""
 if [ "$ENVIRONMENT" = "production" ] ; then
   echo "... using **Production** environment"
-else
+else if [ "$ENVIRONMENT" = "staging" ] ; then
   server="--server https://acme-staging.api.letsencrypt.org/directory"
   echo "... using Staging environment"
+else
+  fatal "environment '$ENVIRONMENT' not recognized" "valid values are 'production' and 'staging'"
 fi
 
 
@@ -88,7 +91,7 @@ if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certi
         --key-type "$KEY_TYPE" \
         --accept-tos \
         $server renew \
-        --days "${RENEW_DAYS_BEFORE_EXPIRE:-30}"
+        --days "$RENEW_DAYS_BEFORE_EXPIRE"
 else
   ## Create the certificate!
   echo "... creating certificate '$cert_name'"

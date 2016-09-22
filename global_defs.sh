@@ -1,6 +1,9 @@
 #
 # Global configuration file
 #
+# All commented variables have the default value set
+# To change, uncomment and update the value
+#
 
 ##### Required configuration section
 
@@ -9,7 +12,9 @@
 EMAIL=""
 
 ## Define the CloudFlare login and API Key to use
-CLOUDFLARE_EMAIL="$EMAIL"
+## We default CLOUDFLARE_EMAIL to EMAIL, saves some typing on simple
+## setups :)
+# CLOUDFLARE_EMAIL="$EMAIL"
 CLOUDFLARE_API_KEY=""
 
 
@@ -18,24 +23,28 @@ CLOUDFLARE_API_KEY=""
 ## How many days to expiration date for renewal to happen, default is 30
 # RENEW_DAYS_BEFORE_EXPIRE=30
 
+## Should we commit important files automatically
 ## Set to "no" if you don't want automatic commits with all the changes
-GIT_COMMITS="yes"
+# GIT_COMMITS="yes"
 
-## Dry run (default is "no")
-## Will not execute the lego commands but will print them
-# DRY_RUN="yes"
+## Dry run: don't commit or execute lego commands
+## Usefull to understand what would happen
+# DRY_RUN="no"
 
-## Uncomment the next line if you want to disable all updates to all domains
-# DISABLED="yes"
+## Disable all the updates
+## Set to "yes this will make ./bin/update.sh stop working. Useful to
+## make sure nobody updates nothing, even automated scripts
+# DISABLED="no"
 
-## Use staging or production environment? (defaults to staging)
+## Use staging or production environment?
 ## Uncomment the next line to use production. I *strongly* recommend that you do this *per* certificate...
-# ENVIRONMENT="production"
+# ENVIRONMENT="staging"
 
 
 ##### Certificate defaults section
 
-## Type of key to create for certificate
-## The default is the most widely supported type
+## Type of key to create for certificate, *not* the account key
+## The default is the most widely supported type by the majority of
+## browsers, rsa2048
 ## Supported: rsa2048, rsa4096, rsa8192, ec256, ec384
-KEY_TYPE="rsa2048"
+# KEY_TYPE="rsa2048"
