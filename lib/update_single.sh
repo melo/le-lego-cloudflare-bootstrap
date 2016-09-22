@@ -16,7 +16,7 @@ if [ -z "$cert_spec_dir" ] ; then
 fi
 
 cert_name=`basename "$cert_spec_dir"`
-echo "*** Updating '$cert_name' certificate '$cert_spec_dir'"
+echo "*** Updating '$cert_name' certificate"
 printf "*** at "
 date
 
@@ -57,10 +57,10 @@ lego --version
 ## Production or Staging?
 server=""
 if [ "$ENVIRONMENT" = "production" ] ; then
-  echo "... using **Production** environment"
-else if [ "$ENVIRONMENT" = "staging" ] ; then
+  echo "... using **production** environment"
+elif [ "$ENVIRONMENT" = "staging" ] ; then
   server="--server https://acme-staging.api.letsencrypt.org/directory"
-  echo "... using Staging environment"
+  echo "... using staging environment"
 else
   fatal "environment '$ENVIRONMENT' not recognized" "valid values are 'production' and 'staging'"
 fi
