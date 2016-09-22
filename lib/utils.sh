@@ -72,6 +72,7 @@ git_commit_globals ()
   git_commit "Updated accounts" "./accounts/"
   git_commit "Updated core scripts" "./bin/" "./lib/"
   git_commit "Updated global configuration" "./global_defs.sh"
+  git_commit "Updated hook scripts" "./hooks/"
 }
 
 

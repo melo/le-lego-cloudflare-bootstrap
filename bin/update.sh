@@ -32,4 +32,12 @@ else
 fi
 
 
+## Run deploy hook
+if [ -x "./hooks/deploy.sh" ] ; then
+  echo "... running deploy hook"
+  ./hooks/deploy.sh
+fi
 
+
+## Finito
+echo "... update completed"
