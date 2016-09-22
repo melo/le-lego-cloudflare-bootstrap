@@ -26,16 +26,18 @@ cert_spec_file="$cert_spec_dir/spec.sh"
 if [ -e "$cert_spec_file" ] ; then
   echo "... reading certificate '$cert_spec_file' spec file"
   . "$cert_spec_file"
-else
-  fatal "invalid certificate spec dir '$cert_spec_dir': missing spec.sh file"
 fi
 
 fatal_if_disabled "certificate '$cert_name' disabled in '$cert_spec_file' spec file"
 
 if [ -z "$DOMAIN" ] ; then
-  fatal "no domain to use on certificate '$cert_name' spec file" "local $cert_spec_file lacks a DOMAIN configuration"
+  DOMAIN="$cert_name"
+  echo "... using certificate spec directory name as domain, '$DOMAIN'"
 fi
 
+if [ -z "$DOMAIN" ] ; then
+  fatal "no domain to use on certificate '$cert_name' spec file" "local $cert_spec_file lacks a DOMAIN configuration"
+fi
 
 ## Check for other required settings
 
