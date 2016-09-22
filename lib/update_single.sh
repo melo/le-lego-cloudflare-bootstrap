@@ -72,7 +72,8 @@ if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certi
         --dns cloudflare \
         --key-type "$KEY_TYPE" \
         --accept-tos \
-        $server renew
+        $server renew \
+        --days "${RENEW_DAYS_BEFORE_EXPIRE:-30}"
   set +x
 else    
   ## Create the certificate!

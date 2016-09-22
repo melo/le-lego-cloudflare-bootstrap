@@ -15,6 +15,9 @@ CLOUDFLARE_API_KEY=""
 
 ##### Operations flags section
 
+## How many days to expiration date for renewal to happen, default is 30
+# RENEW_DAYS_BEFORE_EXPIRE=30
+
 ## Set to "no" if you don't want automatic commits with all the changes
 GIT_COMMITS="yes"
 
