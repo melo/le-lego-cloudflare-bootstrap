@@ -25,6 +25,24 @@ if_true ()
   fi
 }
 
+if_false ()
+{
+  local var
+  var="$1"
+  shift
+  if [ "${!var}" = 0 -o "${!var}" = "no" ] ; then
+    "$@"
+  fi
+}
+
+dry_run ()
+{
+  DRY_RUN=${DRY_RUN:-no}
+
+  if_false 'DRY_RUN' "$@"
+  if_true  'DRY_RUN' echo "!!! Dry run:" "$@"
+}
+
 exit_if_disabled ()
 {
   if_true "DISABLED" fatal "$@"
@@ -41,8 +59,8 @@ _do_git_commit () {
 
   if [ -n "$( git status --porcelain "$@" )" ] ; then
     echo "... git commit '$msg' of '$@'"
-    git add "$@"
-    git commit -m "$msg" -m "Generated-by: le-lego-cloudflare $0"
+    dry_run git add "$@"
+    dry_run git commit -m "$msg" -m "Generated-by: le-lego-cloudflare $0"
   fi
 }
 

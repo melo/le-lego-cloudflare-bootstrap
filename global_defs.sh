@@ -21,6 +21,10 @@ CLOUDFLARE_API_KEY=""
 ## Set to "no" if you don't want automatic commits with all the changes
 GIT_COMMITS="yes"
 
+## Dry run (default is "no")
+## Will not execute the lego commands but will print them
+# DRY_RUN="yes"
+
 ## Uncomment the next line if you want to disable all updates to all domains
 # DISABLED="yes"
 
