@@ -65,7 +65,7 @@ if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certi
   ## Renew the certificate!
   echo "... renewing the certificate for domain '$DOMAIN'"
   set -x
-  echo lego \
+  lego \
         --path "." \
         --email="$EMAIL" \
         --domains="$DOMAIN" \
@@ -78,7 +78,7 @@ else
   ## Create the certificate!
   echo "... creating certificate for domain '$DOMAIN'"
   set -x
-  echo lego \
+  lego \
       --path "." \
       --email="$EMAIL" \
       --domains="$DOMAIN" \
@@ -93,4 +93,5 @@ if [ ! -e "certificates/$DOMAIN.key" -o ! -e "certificates/$DOMAIN.crt" -o ! -e 
   fatal "failed to create certificate for '$DOMAIN'"
 fi
 
+git_commit_globals
 git_commit "Updated certificate $cert for domain $DOMAIN" "$cert_file" "./certificates/$DOMAIN.*"
