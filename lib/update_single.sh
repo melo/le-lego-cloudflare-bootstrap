@@ -59,6 +59,19 @@ else
 fi
 
 
+## Define all the domains to generate cert for
+echo "... generating certificate for domain '$DOMAIN'"
+domains="--domains $DOMAIN"
+additional_doms_file="$cert_file-additional_domains.txt"
+if [ -e "$additional_doms_file" ] ; then
+  echo "... scanning file $additional_doms_file for additional domains for certificate"
+   while read dom ; do
+    echo "...... adding extra domain '$dom'"
+    domains+=" --domains $dom"
+  done < <( egrep -v "^\s*#" "$additional_doms_file" | egrep -v "^\s*$" )
+fi
+
+
 ## Create or renew?
 
 if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certificates/$DOMAIN.json" ] ; then
@@ -68,7 +81,7 @@ if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certi
   dry_run lego \
         --path "." \
         --email="$EMAIL" \
-        --domains="$DOMAIN" \
+        $domains \
         --dns cloudflare \
         --key-type "$KEY_TYPE" \
         --accept-tos \
@@ -82,7 +95,7 @@ else
   dry_run lego \
       --path "." \
       --email="$EMAIL" \
-      --domains="$DOMAIN" \
+      $domains \
       --dns cloudflare \
       --key-type "$KEY_TYPE" \
       --accept-tos \
