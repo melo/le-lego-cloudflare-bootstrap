@@ -114,4 +114,4 @@ fi
 
 ## commit all the things
 git_commit_globals
-git_commit_and_mark_dirty ".dirty.single" "Updated certificate $cert for domain $DOMAIN" "$cert_file" "./certificates/$DOMAIN.*"
+git_commit_and_mark_dirty ".dirty.single" "Updated certificate $cert for domain $DOMAIN" "$cert_file" "./certificates/$DOMAIN."*
