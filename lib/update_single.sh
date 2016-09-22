@@ -77,7 +77,6 @@ fi
 if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certificates/$DOMAIN.json" ] ; then
   ## Renew the certificate!
   echo "... renewing the certificate for domain '$DOMAIN'"
-  set -x
   dry_run lego \
         --path "." \
         --email="$EMAIL" \
@@ -87,11 +86,9 @@ if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certi
         --accept-tos \
         $server renew \
         --days "${RENEW_DAYS_BEFORE_EXPIRE:-30}"
-  set +x
 else    
   ## Create the certificate!
   echo "... creating certificate for domain '$DOMAIN'"
-  set -x
   dry_run lego \
       --path "." \
       --email="$EMAIL" \
@@ -100,7 +97,6 @@ else
       --key-type "$KEY_TYPE" \
       --accept-tos \
       $server run
-  set +x
 fi
 
 if [ ! -e "certificates/$DOMAIN.key" -o ! -e "certificates/$DOMAIN.crt" -o ! -e "certificates/$DOMAIN.json" ] ; then
