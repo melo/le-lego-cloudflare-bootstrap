@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Create or renew certificates for a set of domains
 #
