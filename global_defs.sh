@@ -53,7 +53,7 @@ EMAIL=""
 
 ## Use staging or production environment?
 ## Uncomment the next line to use production. I *strongly* recommend that you do this *per* certificate...
-# ENVIRONMENT="staging"
+# ENVIRONMENT="production"
 
 
 ##### Certificate defaults section
