@@ -11,11 +11,26 @@
 ## Used for warning messages about certificate expiration
 EMAIL=""
 
-## Define the CloudFlare login and API Key to use
-## We default CLOUDFLARE_EMAIL to EMAIL, saves some typing on simple
-## setups :)
+## Your DNS Provider configuration environment
+##
+## Use "lego dnshelp" to figure out what you need
+##
+## You do need a PROVIDER though...
+##
+# PROVIDER=cloudflare
+# PROVIDER=route53
+
+## Example: for CloudFlare, define the CloudFlare login and API Key
+## to use. We default CLOUDFLARE_EMAIL to EMAIL, saves some typing
+## on simple setups :)
 # CLOUDFLARE_EMAIL="$EMAIL"
-CLOUDFLARE_API_KEY=""
+# CLOUDFLARE_API_KEY=""
+
+## Example: for AWS Route53, we need AWS_* variables.
+## We do recommend that you use aws-keychain
+## to keep your credentials safe
+# AWS_ACCESS_KEY_ID=...
+# AWS_SECRET_ACCESS_KEY=...
 
 
 ##### Operations flags section

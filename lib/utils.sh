@@ -57,7 +57,7 @@ _do_git_commit () {
   if [ -n "$( git status --porcelain "$@" )" ] ; then
     echo "... git commit '$msg' of '$@'"
     dry_run git add "$@"
-    dry_run git commit -m "$msg" -m "Generated-by: le-lego-cloudflare $0"
+    dry_run git commit -m "$msg" -m "Generated-by: le-lego-$PROVIDER $0"
   fi
 }
 
@@ -76,7 +76,7 @@ _do_git_commit_and_mark_dirty () {
   if [ -n "$( git status --porcelain "$@" )" ] ; then
     echo "... git commit '$msg' of '$@'"
     dry_run git add "$@"
-    dry_run git commit -m "$msg" -m "Generated-by: le-lego-cloudflare $0"
+    dry_run git commit -m "$msg" -m "Generated-by: le-lego-$PROVIDER $0"
     dry_run touch "$flag"
     dry_run touch ".dirty.at_least_one"
   fi

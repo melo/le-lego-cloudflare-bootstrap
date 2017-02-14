@@ -41,12 +41,11 @@ fi
 
 ## Check for other required settings
 
-for var in "EMAIL" "CLOUDFLARE_EMAIL" "CLOUDFLARE_API_KEY" "RENEW_DAYS_BEFORE_EXPIRE" "KEY_TYPE" "ENVIRONMENT" ; do
+for var in "EMAIL" "RENEW_DAYS_BEFORE_EXPIRE" "KEY_TYPE" "ENVIRONMENT" ; do
   if [ -z "${!var}" ] ; then
     fatal "missing $var definition via spec files" "add it to the global or local '$cert_name' certificate spec file"
   fi
 done
-export CLOUDFLARE_EMAIL CLOUDFLARE_API_KEY
 
 
 ## Check for lego: this will die if lego not found
@@ -89,7 +88,7 @@ if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certi
         --path "." \
         --email="$EMAIL" \
         $domains \
-        --dns cloudflare \
+        --dns "$PROVIDER" \
         --key-type "$KEY_TYPE" \
         --accept-tos \
         $server renew \
@@ -101,7 +100,7 @@ else
       --path "." \
       --email="$EMAIL" \
       $domains \
-      --dns cloudflare \
+      --dns "$PROVIDER" \
       --key-type "$KEY_TYPE" \
       --accept-tos \
       $server run
