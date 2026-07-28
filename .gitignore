@@ -1,0 +1,12 @@
+# Local secrets — never commit
+.env
+
+# Transient run markers (see bin/update.sh, lib/utils.sh)
+.dirty.*
+.failed.*
+
+# Whether to track issued certificate material and ACME account keys in this
+# repo is your call. If you do NOT want them committed, uncomment:
+# certificates/
+# accounts/
+# logs/

@@ -16,7 +16,7 @@ set -e
 specs="$@"
 git_commit_globals
 
-rm -f ".dirty.at_least_one"
+rm -f ".dirty.at_least_one" ".failed.at_least_one"
 if [ -z "$specs" ] ; then
   ls -d1 "$specs_dir/"* | while read spec_dir ; do
     if [ -d "$spec_dir" ] ; then
@@ -46,3 +46,11 @@ fi
 
 ## Finito
 echo "... update completed"
+
+## If any certificate failed, exit non-zero so an external wrapper (cron,
+## runitor/healthchecks.io, ...) reports the run as failed. Successful certs
+## above were still processed and deployed.
+if [ -e ".failed.at_least_one" ] ; then
+  rm -f ".failed.at_least_one"
+  fatal "one or more certificates FAILED to update (see logs/*/last_error.log)"
+fi

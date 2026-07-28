@@ -58,7 +58,7 @@ server=""
 if [ "$ENVIRONMENT" = "production" ] ; then
   echo "... using **production** environment"
 elif [ "$ENVIRONMENT" = "staging" ] ; then
-  server="--server https://acme-staging.api.letsencrypt.org/directory"
+  server="--server https://acme-staging-v02.api.letsencrypt.org/directory"
   echo "... using staging environment"
 else
   fatal "environment '$ENVIRONMENT' not recognized" "valid values are 'production' and 'staging'"
@@ -81,29 +81,34 @@ fi
 
 
 ## Create or renew?
+##
+## As of lego 5.x the standalone 'renew' subcommand is gone: 'run' now obtains a
+## new certificate or renews an existing one (respecting --renew-days). All
+## options are flags placed *after* 'run' (the old global '--path' before the
+## subcommand no longer works).
 if [ -e "certificates/$DOMAIN.key" -a -e "certificates/$DOMAIN.crt" -a -e "certificates/$DOMAIN.json" ] ; then
   ## Renew the certificate!
   echo "... renewing the certificate '$cert_name'"
-  dry_run lego \
+  dry_run lego run \
         --path "." \
         --email="$EMAIL" \
         $domains \
         --dns "$PROVIDER" \
         --key-type "$KEY_TYPE" \
         --accept-tos \
-        $server renew \
-        --days "$RENEW_DAYS_BEFORE_EXPIRE"
+        $server \
+        --renew-days "$RENEW_DAYS_BEFORE_EXPIRE"
 else
   ## Create the certificate!
   echo "... creating certificate '$cert_name'"
-  dry_run lego \
+  dry_run lego run \
       --path "." \
       --email="$EMAIL" \
       $domains \
       --dns "$PROVIDER" \
       --key-type "$KEY_TYPE" \
       --accept-tos \
-      $server run
+      $server
 fi
 
 if [ ! -e "certificates/$DOMAIN.key" -o ! -e "certificates/$DOMAIN.crt" -o ! -e "certificates/$DOMAIN.json" ] ; then

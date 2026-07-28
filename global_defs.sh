@@ -20,17 +20,20 @@ EMAIL=""
 # PROVIDER=cloudflare
 # PROVIDER=route53
 
-## Example: for CloudFlare, define the CloudFlare login and API Key
-## to use. We default CLOUDFLARE_EMAIL to EMAIL, saves some typing
-## on simple setups :)
-# CLOUDFLARE_EMAIL="$EMAIL"
-# CLOUDFLARE_API_KEY=""
-
-## Example: for AWS Route53, we need AWS_* variables.
-## We do recommend that you use aws-keychain
-## to keep your credentials safe
-# AWS_ACCESS_KEY_ID=...
-# AWS_SECRET_ACCESS_KEY=...
+## Your provider credentials (API keys/tokens) are SECRETS and must NOT live in
+## this file, which is committed to git. Put them in a gitignored ./.env instead:
+## it is sourced and auto-exported below so lego picks them up. See .env.example.
+##
+## Run "lego dnshelp -c $PROVIDER" to see exactly which variables your provider
+## needs, e.g.:
+##   CloudFlare (scoped token, recommended): CLOUDFLARE_DNS_API_TOKEN
+##   CloudFlare (legacy global key):         CLOUDFLARE_EMAIL + CLOUDFLARE_API_KEY
+##   AWS Route53:                            AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY
+if [ -e "./.env" ] ; then
+  set -a          # auto-export everything defined in .env, so lego can read it
+  . "./.env"
+  set +a
+fi
 
 
 ##### Operations flags section

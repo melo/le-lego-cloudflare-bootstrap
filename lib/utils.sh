@@ -101,7 +101,7 @@ git_commit_globals ()
 # Logic to update a single cert
 
 update_single_cert () {
-  local cert_spec_dir
+  local cert_spec_dir cert_name logfile rc
   cert_spec_dir="$1"
 
   rm -f ".dirty.single" ## Sanity, just in case...
@@ -111,7 +111,23 @@ update_single_cert () {
   mkdir -p "logs" "logs/$cert_name"
   logfile="logs/$cert_name.log"
 
+  ## Run the update, capturing the *real* exit status of update_single.sh
+  ## (not tee's), so a lego/auth/DNS failure is never masked. Disable errexit
+  ## around the pipeline so one failed cert does not abort the whole batch:
+  ## failures are recorded globally and reported at the very end.
+  set +e
   ./lib/update_single.sh "$cert_spec_dir" 2>&1 | tee "$logfile"
+  rc=${PIPESTATUS[0]}
+  set -e
+
+  if [ "$rc" -ne 0 ] ; then
+    echo "... !!! FAILED to update certificate '$cert_name' (exit $rc)"
+    mv "$logfile" "logs/$cert_name/last_error.log"
+    touch ".failed.at_least_one"
+    git_commit "Failed update for certificate $cert_name" "logs/$cert_name"
+    rm -f ".dirty.single"
+    return 0
+  fi
 
   if [ -e ".dirty.single" ] ; then
     echo "... certificate updated"
